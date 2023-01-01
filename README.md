@@ -2,7 +2,7 @@
 
 This is an implementation of Conway's Game of Life using sequential, parallel and (soon)distributed processing.
 
-The program can be ran by typing the following command while in the src folder:
+The program can be ran by typing the following command in the CLI while in the 'out\production\Conway''s Game of Life\' folder:
 ```
 'java ConwaysGameOfLife'
 ```
