@@ -32,8 +32,9 @@ public class CopyAndCompareThread implements Runnable {
 	@Override
 	public void run() {
 		// copies matrixUpd into matrix, resets neighbours and checks if block has been updated
+		int cols = matrix[0].length;
 		for (int i = startRow; i < endRow; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
+			for (int j = 0; j < cols; j++) {
 				if (matrix[i][j] != matrixUpd[i][j]) {
 					localSame = false; // this is to avoid constant locks on the atomic boolean harming performance
 				}

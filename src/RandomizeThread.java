@@ -23,8 +23,9 @@ public class RandomizeThread implements Runnable{
 
     @Override
     public void run() {
+        int cols = matrix[0].length;
         for (int i = startRow; i < endRow; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
+            for (int j = 0; j < cols; j++) {
                 matrix[i][j] = new Random().nextInt(2);
                 matrixUpd[i][j] = matrix[i][j];
             }

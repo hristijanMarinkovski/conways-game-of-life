@@ -27,13 +27,14 @@ public class CountAndUpdateThread implements Runnable{
     @Override
     public void run() {
         // this gives us amount of elements surrounding each cell
+        int rows = matrix.length, cols = matrix[0].length;
         for (int i = startRow; i < endRow; i++) {
-            for (int j = 0; j < matrixUpd[0].length; j++) {
+            for (int j = 0; j < cols; j++) {
                 for (int[] direction : directions) {
                     int ci = i + direction[0];
                     int cj = j + direction[1];
-                    if (ci >= 0 && ci < matrix.length) {
-                        if (cj >= 0 && cj < matrix[0].length) {
+                    if (ci >= 0 && ci < rows) {
+                        if (cj >= 0 && cj < cols) {
                             if (matrix[ci][cj] == 1) {
                                 neighbours[i][j]++;
                             }
