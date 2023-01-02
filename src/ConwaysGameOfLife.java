@@ -1,4 +1,3 @@
-import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -27,6 +26,7 @@ public class ConwaysGameOfLife {
 		RunType runType = RunType.valueOf(scanner.next().toUpperCase());
 
 		run(rows, cols, numbOfIterations, runType);
+
 	}
 
 	public static void run(int rows, int cols, int numbOfIterations, RunType runType) throws InterruptedException {
@@ -60,22 +60,23 @@ public class ConwaysGameOfLife {
 
 		while(true) {
 			// print matrix to CLI
+			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < rows; i++) {
-				System.out.print("|");
+				stringBuilder.append("|");
 				for (int j = 0; j < cols; j++) {
 					if(matrixUpd[i][j] == 1) {
-						System.out.print("*  ");
+						stringBuilder.append("*  ");
 					} else {
-						System.out.print(".  ");
+						stringBuilder.append(".  ");
 					}
 				}
-				System.out.println("|");
+				stringBuilder.append("|\n");
 			}
-			System.out.print(" ");
+			stringBuilder.append(" ");
 			for (int i = 0; i < cols; i++) {
-				System.out.print("___");
+				stringBuilder.append("___");
 			}
-			System.out.println();
+			System.out.println(stringBuilder.toString());
 
 			// if the number of desired iterations is reached, just stop the program
 			if(numbOfIterations == 0) {
@@ -170,30 +171,27 @@ public class ConwaysGameOfLife {
 		randomizeLatch.await();
 
 		while(true) {
-			CountDownLatch CLIPrintLatch = new CountDownLatch(numbOfBlocks);
-			CountDownLatch copyAndCompareLatch = new CountDownLatch(numbOfBlocks);
-			CountDownLatch countAndUpdateLatch = new CountDownLatch(numbOfBlocks);
-
-			for (int i = 0; i < numbOfBlocks; i++) {
-				endRow = (i == numbOfBlocks - 1) ? rows : (i+1) * blockSize;
-				CLIPrintThread CLIPrintThread = new CLIPrintThread(matrixUpd, CLIPrintLatch, i*blockSize, endRow);
-				executor.execute(CLIPrintThread);
-			}
-			CLIPrintLatch.await();
-
-			/* prints matrix, gui for now
-			for (int i = 0; i < matrixUpd.length; i++) {
-				for (int j = 0; j < matrixUpd[0].length; j++) {
+			// print matrix to CLI
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < rows; i++) {
+				stringBuilder.append("|");
+				for (int j = 0; j < cols; j++) {
 					if(matrixUpd[i][j] == 1) {
-						System.out.print("* ");
+						stringBuilder.append("*  ");
 					} else {
-						System.out.print(". ");
+						stringBuilder.append(".  ");
 					}
 				}
-				System.out.println();
+				stringBuilder.append("|\n");
 			}
-			System.out.println();
-			*/
+			stringBuilder.append(" ");
+			for (int i = 0; i < cols; i++) {
+				stringBuilder.append("___");
+			}
+			System.out.println(stringBuilder.toString());
+
+			CountDownLatch copyAndCompareLatch = new CountDownLatch(numbOfBlocks);
+			CountDownLatch countAndUpdateLatch = new CountDownLatch(numbOfBlocks);
 
 			// if the number of desired iterations is reached, just stop the program
 			if(numbOfIterations == 0) {
@@ -240,6 +238,7 @@ public class ConwaysGameOfLife {
 		System.out.println("Computations took: ~"+ timeElapsed/1000000 + " ms");
 	}
 
+	// TODO: Distributed implementation
 	public static void runDistributed(int n, int m, int numbOfIterations) {
 	}
 
