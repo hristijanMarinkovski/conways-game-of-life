@@ -219,6 +219,7 @@ public class ConwaysGameOfLife {
 
 	// TODO: Distributed implementation
 	public static void runDistributed(int n, int m, int numbOfIterations) {
+		System.out.println("Distributed processing still not implemented. Try sequential and parallel!");
 	}
 
 }
