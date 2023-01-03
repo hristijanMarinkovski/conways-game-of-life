@@ -1,9 +1,9 @@
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class ConwaysGameOfLife {
 
@@ -60,23 +60,13 @@ public class ConwaysGameOfLife {
 
 		while(true) {
 			// print matrix to CLI
-			StringBuilder stringBuilder = new StringBuilder();
-			for (int i = 0; i < rows; i++) {
-				stringBuilder.append("|");
-				for (int j = 0; j < cols; j++) {
-					if(matrixUpd[i][j] == 1) {
-						stringBuilder.append("*  ");
-					} else {
-						stringBuilder.append(".  ");
-					}
-				}
-				stringBuilder.append("|\n");
-			}
-			stringBuilder.append(" ");
-			for (int i = 0; i < cols; i++) {
-				stringBuilder.append("___");
-			}
-			System.out.println(stringBuilder.toString());
+			String matrixUpdString = Arrays.stream(matrixUpd)
+					.map(ints -> Arrays.stream(ints)
+							.mapToObj(value -> value == 1 ? "*" : ".")
+							.collect(Collectors.joining(" ", "|", "|"))
+					)
+					.collect(Collectors.joining("\n"));
+			System.out.println(matrixUpdString + "\n ___");
 
 			// if the number of desired iterations is reached, just stop the program
 			if(numbOfIterations == 0) {
@@ -160,9 +150,9 @@ public class ConwaysGameOfLife {
 		int blockSize = rows/numbOfBlocks;
 		int endRow;
 		ExecutorService executor = Executors.newFixedThreadPool(numbOfBlocks);
-		CountDownLatch randomizeLatch = new CountDownLatch(numbOfBlocks);
 
 		// randomize matrix
+		CountDownLatch randomizeLatch = new CountDownLatch(numbOfBlocks);
 		for (int i = 0; i < numbOfBlocks; i++) {
 			endRow = (i == numbOfBlocks - 1) ? rows : (i+1) * blockSize;
 			RandomizeThread randomizeThread = new RandomizeThread(matrix, matrixUpd, i*blockSize, endRow, randomizeLatch);
@@ -172,26 +162,13 @@ public class ConwaysGameOfLife {
 
 		while(true) {
 			// print matrix to CLI
-			StringBuilder stringBuilder = new StringBuilder();
-			for (int i = 0; i < rows; i++) {
-				stringBuilder.append("|");
-				for (int j = 0; j < cols; j++) {
-					if(matrixUpd[i][j] == 1) {
-						stringBuilder.append("*  ");
-					} else {
-						stringBuilder.append(".  ");
-					}
-				}
-				stringBuilder.append("|\n");
-			}
-			stringBuilder.append(" ");
-			for (int i = 0; i < cols; i++) {
-				stringBuilder.append("___");
-			}
-			System.out.println(stringBuilder.toString());
-
-			CountDownLatch copyAndCompareLatch = new CountDownLatch(numbOfBlocks);
-			CountDownLatch countAndUpdateLatch = new CountDownLatch(numbOfBlocks);
+			String matrixUpdString = Arrays.stream(matrixUpd).parallel()
+					.map(ints -> Arrays.stream(ints)
+							.mapToObj(value -> value == 1 ? "*" : ".")
+							.collect(Collectors.joining(" ", "|", "|"))
+					)
+					.collect(Collectors.joining("\n"));
+			System.out.println(matrixUpdString + "\n ___");
 
 			// if the number of desired iterations is reached, just stop the program
 			if(numbOfIterations == 0) {
@@ -201,6 +178,7 @@ public class ConwaysGameOfLife {
 
 			if(!firstIter) {
 				// copy matrixUpd into matrix, reset neighbours and check if matrix has updated
+				CountDownLatch copyAndCompareLatch = new CountDownLatch(numbOfBlocks);
 				for (int i = 0; i < numbOfBlocks; i++) {
 					endRow = (i == numbOfBlocks - 1) ? rows : (i+1) * blockSize;
 					CopyAndCompareThread copyAndCompareThread = new CopyAndCompareThread(matrix, matrixUpd, neighbours, i*blockSize, endRow, same, copyAndCompareLatch);
@@ -219,6 +197,7 @@ public class ConwaysGameOfLife {
 			}
 
 			// count number of living neighbours and update to proper values
+			CountDownLatch countAndUpdateLatch = new CountDownLatch(numbOfBlocks);
 			for(int i = 0; i < numbOfBlocks; i++){
 				endRow = (i == numbOfBlocks - 1) ? rows : (i+1) * blockSize;
 				CountAndUpdateThread countAndUpdateThread = new CountAndUpdateThread(matrix, matrixUpd, neighbours, i*blockSize, endRow, countAndUpdateLatch);
