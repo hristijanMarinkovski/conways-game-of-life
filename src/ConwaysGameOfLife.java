@@ -25,8 +25,9 @@ public class ConwaysGameOfLife {
 		System.out.println("Enter the type of processing you would like to use. (sequential, parallel or distributed)");
 		RunType runType = RunType.valueOf(scanner.next().toUpperCase());
 
-		run(rows, cols, numbOfIterations, runType);
+		scanner.close();
 
+		run(rows, cols, numbOfIterations, runType);
 	}
 
 	public static void run(int rows, int cols, int numbOfIterations, RunType runType) throws InterruptedException {
